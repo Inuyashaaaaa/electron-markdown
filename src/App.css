@@ -18,6 +18,7 @@
 }
 
 .docContainer {
+  position: relative;
   width: calc(100% - 330px);
 }
 
@@ -31,4 +32,23 @@
 .bottom-btn {
   width: calc(330px / 2);
   padding: -10px;
-} 
+}
+
+#simplemde-editor-2-wrapper {
+  height: calc(100% - 42px) !important;
+}
+
+.CodeMirror-wrap {
+  height: calc(100% - 83px) !important;
+}
+
+.CodeMirror-scroll {
+  min-height: calc(100% - 83px) !important;
+}
+
+.startPage {
+  position: absolute;
+  left: calc(50% - 134px);
+  top: 45%;
+  font-size: 30px;
+}
