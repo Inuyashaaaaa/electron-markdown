@@ -1,24 +1,25 @@
-import React, { FC, useState, KeyboardEvent } from 'react'
+import React, { FC, useState, KeyboardEvent, ChangeEvent } from 'react'
 import { List, Skeleton, Button, Input } from 'antd'
 import './FileList.css'
 import { EditOutlined, DeleteOutlined, FileMarkdownOutlined } from '@ant-design/icons'
 
 interface fileProps {
-  id: number
+  id: string
   title: string
   content: string
   createdAt: number
+  isNew?: boolean
 }
 
 interface FileListProps {
   files: fileProps[]
-  onFileClick?: (id: number) => void
-  onFileDelete?: (id: number) => void
-  onFileEdit?: (id: number, newTitle: string) => void
+  onFileClick?: (id: string) => void
+  onFileDelete?: (id: string) => void
+  onFileEdit?: (id: string, newTitle: string) => void
 }
 
 const FileList: FC<FileListProps> = (props) => {
-  const [selectedId, setSelectedId] = useState(0)
+  const [selectedId, setSelectedId] = useState('0')
   const [selectedTitle, setSelectedTitle] = useState('')
   const {
     files,
@@ -26,18 +27,17 @@ const FileList: FC<FileListProps> = (props) => {
     onFileDelete,
     onFileEdit
   } = props
-  const handleFileClick = (id: number) => {
+  const handleFileClick = (id: string) => {
     if (onFileClick) {
       onFileClick(id)
     }
   }
-  const handleFileDelete = (id: number) => {
+  const handleFileDelete = (id: string) => {
     if (onFileDelete) {
       onFileDelete(id)
     }
   }
-  const handleFileEdit = (title: string, id: number) => {
-    console.log(title, id)
+  const handleFileEdit = (title: string, id: string) => {
     setSelectedId(id)
     setSelectedTitle(title)
   }
@@ -70,29 +70,47 @@ const FileList: FC<FileListProps> = (props) => {
 
   const renderSelectedJSX = (item: fileProps) => {
     const handleFileEditBlur = () => {
+      if (item.title.trim() === '' && item.isNew === true) {
+        console.log('ok')
+        handleFileDelete(item.id)
+        return
+      }
+      if (item.isNew) {
+        handleFileClick(item.id)
+        delete item.isNew
+      }
       if (onFileEdit) {
         onFileEdit(item.id, selectedTitle)
       }
-      setSelectedId(0)
+      setSelectedId('0')
     }
     const handleFileEditKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
       switch (e.keyCode) {
         case 13:
+          if (item.isNew && item.title.trim() !== '') {
+            delete item.isNew
+            handleFileClick(item.id)
+          }
           if (onFileEdit) {
             onFileEdit(item.id, selectedTitle)
           }
-          setSelectedId(0)
+          setSelectedId('0')
           break;
         case 27:
           if (onFileEdit) {
             onFileEdit(item.id, item.title)
           }
-          setSelectedId(0)
+          setSelectedId('0')
           setSelectedTitle(item.title)
           break;
         default:
           break;
       }
+    }
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setSelectedTitle(e.target.value)
+      if (onFileEdit)
+        onFileEdit(item.id, e.target.value)
     }
     return (
       <List.Item
@@ -108,7 +126,7 @@ const FileList: FC<FileListProps> = (props) => {
               defaultValue={item.title}
               onBlur={handleFileEditBlur}
               onKeyUp={handleFileEditKeyUp}
-              onChange={(e) => setSelectedTitle(e.target.value)}
+              onChange={(e) => handleFileChange(e)}
             />
           </div>
         </Skeleton>
@@ -116,8 +134,6 @@ const FileList: FC<FileListProps> = (props) => {
     )
   }
 
-
-    
   return (
     <div>
       <List
@@ -127,7 +143,7 @@ const FileList: FC<FileListProps> = (props) => {
         dataSource={files}
         renderItem={item => (
           <>
-            {item.id === selectedId ? renderSelectedJSX(item) : renderUnselectedJSX(item)}
+            {item.id === selectedId || item.isNew ? renderSelectedJSX(item) : renderUnselectedJSX(item)}
           </>
         )}
       />

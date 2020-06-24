@@ -4,18 +4,19 @@ import './FileTab.css'
 const { TabPane } = Tabs
 
 interface fileProps {
-  id: number
+  id: string
   title: string
   content: string
   createdAt: number
+  isNew?: boolean
 }
 
 interface FileTabProps {
   files: fileProps[]
   activeId?: string
   unsavedIds?: number[]
-  onTabClick?: (id: number) => void
-  onTabClose?: (id: number) => void
+  onTabClick?: (id: string) => void
+  onTabClose?: (id: string) => void
 }
 
 const FileTab: FC<FileTabProps> = (props) => {
@@ -27,24 +28,24 @@ const FileTab: FC<FileTabProps> = (props) => {
   } = props
   const handleChange = (activeKey: string) => {
     if (onTabClick) {
-      onTabClick(parseInt(activeKey))
+      onTabClick(activeKey)
     }
   }
   const handleEdit = (e: any, action: 'remove' | 'add' ) => {
     if (action === 'remove' && onTabClose) {
-      onTabClose(parseInt(e))
+      onTabClose(e)
     }
   }
   return (
     <Tabs
       hideAdd
       onChange={handleChange}
-      defaultActiveKey={activeId ? activeId : ''}
+      activeKey={activeId}
       type="editable-card"
       onEdit={handleEdit}
     >
       {files.map(file => (
-        <TabPane tab={file.title} key={(file.id).toString()}>
+        <TabPane tab={file.title} key={file.id}>
         </TabPane>
       ))}
     </Tabs>
