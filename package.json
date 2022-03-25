@@ -15,7 +15,7 @@
     "@types/uuid": "^8.0.0",
     "antd": "^4.3.5",
     "cross-env": "^7.0.2",
-    "electron": "^9.0.4",
+    "electron": "^13.6.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
